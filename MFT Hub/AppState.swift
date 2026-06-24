@@ -102,6 +102,13 @@ final class AppState: ObservableObject {
         catch { entries = backup; errorMessage = error.localizedDescription }
     }
 
+    func addRoutine(name: String, descr: String) async {
+        var inputs = routines.map { RoutineInput(name: $0.name, descr: $0.descr) }
+        inputs.append(RoutineInput(name: name, descr: descr))
+        do { routines = try await APIClient.setRoutines(inputs) }
+        catch { errorMessage = error.localizedDescription }
+    }
+
     func logWeight(_ value: Double) async {
         do {
             let w = try await APIClient.logWeight(value: value, date: df.string(from: Date()))

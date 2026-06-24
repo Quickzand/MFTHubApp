@@ -57,7 +57,11 @@ struct ContentView: View {
             } onDiscard: { pending = nil }
         }
         .sheet(item: $editing) { entry in
-            EditEntrySheet(entry: entry) { updated in Task { await state.update(updated) } }
+            EditEntrySheet(entry: entry) { updated in
+                Task { await state.update(updated) }
+            } onSaveRoutine: { name, descr in
+                Task { await state.addRoutine(name: name, descr: descr) }
+            }
         }
         .confirmationDialog("Add a photo", isPresented: $showPhotoChoice) {
             Button("Take Photo") { showCamera = true }
