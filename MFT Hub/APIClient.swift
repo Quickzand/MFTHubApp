@@ -18,6 +18,8 @@ enum APIError: LocalizedError {
 /// so they can be changed in Settings without rebuilding.
 enum AppConfig {
     // Used unless overridden in Settings. Change there and your value wins.
+    // Real values live in the git-ignored Secrets.swift — never hardcode them here:
+    // this file is committed to a public repo.
     static let defaultServerURL = Secrets.serverURL
     static let defaultToken = Secrets.token
 }
@@ -117,6 +119,11 @@ struct APIClient {
     static func settings() async throws -> Settings {
         let data = try await request("/settings")
         return try decode(data, as: Settings.self)
+    }
+
+    static func recents() async throws -> [RecentMeal] {
+        let data = try await request("/recents")
+        return try decode(data, as: [RecentMeal].self)
     }
 
     static func summary(days: Int = 7) async throws -> [DaySummary] {

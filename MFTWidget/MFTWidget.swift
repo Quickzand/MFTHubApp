@@ -1,8 +1,6 @@
 import WidgetKit
 import SwiftUI
 
-// Personal single-user app: the server URL + token are baked in (same as the app's
-// defaults). If you ever change them in the app, update them here too.
 private let kServerURL = Secrets.serverURL
 private let kToken = Secrets.token
 private let kAccent = Color(red: 0.137, green: 0.820, blue: 0.514) // #23D183
@@ -53,10 +51,9 @@ struct Provider: TimelineProvider {
     }
 }
 
-/// A row of dots that fill left-to-right; the "current" dot fills partially,
-/// so the whole row reads like a progress bar spread across dots.
+/// A row of dots that fill left-to-right; the active dot fills partially.
 struct DotsProgress: View {
-    var progress: Double          // 0...1
+    var progress: Double
     var count: Int = 10
     var dot: CGFloat = 9
 
@@ -65,13 +62,9 @@ struct DotsProgress: View {
             ForEach(0..<count, id: \.self) { i in
                 let fill = min(1, max(0, progress * Double(count) - Double(i)))
                 ZStack {
-                    Circle().fill(Color.primary.opacity(0.22))   // empty
-                    Circle().fill(kAccent)                       // filled portion
-                        .mask(
-                            GeometryReader { geo in
-                                Rectangle().frame(width: geo.size.width * fill)
-                            }
-                        )
+                    Circle().fill(Color.primary.opacity(0.22))
+                    Circle().fill(kAccent)
+                        .mask(GeometryReader { geo in Rectangle().frame(width: geo.size.width * fill) })
                 }
                 .frame(width: dot, height: dot)
             }
@@ -92,11 +85,7 @@ struct MFTWidgetEntryView: View {
     var body: some View {
         content
             .containerBackground(for: .widget) {
-                if family == .systemSmall {
-                    Rectangle().fill(.fill.tertiary)
-                } else {
-                    Color.clear
-                }
+                if family == .systemSmall { Rectangle().fill(.fill.tertiary) } else { Color.clear }
             }
     }
 
@@ -144,9 +133,4 @@ struct MFTWidget: Widget {
         .description("Your remaining calories today.")
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .systemSmall])
     }
-}
-
-@main
-struct MFTWidgetBundle: WidgetBundle {
-    var body: some Widget { MFTWidget() }
 }

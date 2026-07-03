@@ -249,6 +249,27 @@ struct ContentView: View {
                     Button("Undo") { undoDelete() }.font(.subheadline.weight(.semibold))
                 }.font(.subheadline).padding(12).glassEffect(in: RoundedRectangle(cornerRadius: 16))
             }
+            if !state.recents.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(state.recents.prefix(8)) { r in
+                            Button {
+                                Haptics.success()
+                                Task { await state.logRecent(r) }
+                            } label: {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "arrow.counterclockwise").font(.caption2)
+                                    Text(r.text).lineLimit(1)
+                                    Text("\(Int(r.calories))").foregroundStyle(.secondary)
+                                }
+                                .frame(maxWidth: 190)
+                            }
+                            .font(.subheadline).tint(.primary).buttonStyle(.glass)
+                        }
+                    }.padding(.horizontal, 4)
+                }
+            }
+
             if !state.routines.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {

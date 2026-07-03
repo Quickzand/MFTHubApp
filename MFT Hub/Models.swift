@@ -67,6 +67,16 @@ struct SettingsUpdate: Codable {
     var goal: Int
 }
 
+struct RecentMeal: Codable, Identifiable, Hashable {
+    var text: String
+    var calories: Double
+    var protein: Double
+    var carbs: Double
+    var fat: Double
+    var count: Int
+    var id: String { text }
+}
+
 struct DaySummary: Codable, Identifiable {
     var date: String
     var calories: Double

@@ -7,6 +7,7 @@ import WidgetKit
 final class AppState: ObservableObject {
     @Published var entries: [Entry] = []
     @Published var routines: [Routine] = []
+    @Published var recents: [RecentMeal] = []
     @Published var weekData: [DaySummary] = []
     @Published var weights: [Weight] = []
     @Published var goal: Int = 2000
@@ -39,6 +40,7 @@ final class AppState: ObservableObject {
             async let s = APIClient.settings()
             async let wk = APIClient.summary(days: 7)
             async let wt = APIClient.weights(days: 90)
+            async let rc = APIClient.recents()
             entries = try await e
             routines = try await r
             let settings = try await s
@@ -46,6 +48,7 @@ final class AppState: ObservableObject {
             model = settings.model
             weekData = try await wk
             weights = try await wt
+            recents = try await rc
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -66,7 +69,14 @@ final class AppState: ObservableObject {
 
     private func reloadWeek() async {
         weekData = (try? await APIClient.summary(days: 7)) ?? weekData
+        recents = (try? await APIClient.recents()) ?? recents
         WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    /// One-tap re-log of a recent meal — no AI round-trip.
+    func logRecent(_ r: RecentMeal) async {
+        await save(EntryCreate(text: r.text, calories: r.calories,
+                               protein: r.protein, carbs: r.carbs, fat: r.fat))
     }
 
     func save(_ create: EntryCreate) async {
