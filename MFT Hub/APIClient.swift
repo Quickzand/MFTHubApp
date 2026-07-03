@@ -137,6 +137,10 @@ struct APIClient {
         return try decode(data, as: Weight.self)
     }
 
+    static func deleteWeight(date: String) async throws {
+        _ = try await request("/weights/\(date)", method: "DELETE")
+    }
+
     static func setGoal(_ goal: Int) async throws -> Settings {
         let data = try await request("/settings", method: "PUT", body: try encoder.encode(SettingsUpdate(goal: goal)))
         return try decode(data, as: Settings.self)

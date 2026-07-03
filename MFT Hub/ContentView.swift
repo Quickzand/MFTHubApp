@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var pendingText = ""
     @State private var editing: Entry?
     @State private var showWeightInput = false
+    @State private var showWeightHistory = false
     @State private var weightInput = ""
     @State private var recentlyDeleted: Entry?
     @FocusState private var inputFocused: Bool
@@ -49,6 +50,7 @@ struct ContentView: View {
         .tint(Theme.accent)
         .task { await state.refresh() }
         .sheet(isPresented: $showSettings) { SettingsView().environmentObject(state) }
+        .sheet(isPresented: $showWeightHistory) { WeightHistorySheet().environmentObject(state) }
         .sheet(isPresented: $showCamera) { ImagePicker(source: .camera) { image = $0 } }
         .sheet(isPresented: $showLibrary) { ImagePicker(source: .library) { image = $0 } }
         .sheet(item: $pending) { est in
@@ -180,6 +182,12 @@ struct ContentView: View {
             HStack {
                 Text("Weight").font(.headline)
                 Spacer()
+                if !state.weights.isEmpty {
+                    Button { showWeightHistory = true } label: {
+                        Image(systemName: "clock.arrow.circlepath").font(.subheadline)
+                    }
+                    .buttonStyle(.glass).tint(.primary)
+                }
                 Button { showWeightInput = true } label: { Label("Log", systemImage: "plus").font(.subheadline) }
                     .buttonStyle(.glass).tint(.primary)
             }

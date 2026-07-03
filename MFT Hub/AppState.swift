@@ -126,13 +126,25 @@ final class AppState: ObservableObject {
     }
 
     func logWeight(_ value: Double) async {
+        await setWeight(date: df.string(from: Date()), value: value)
+    }
+
+    /// Create or correct the weigh-in for a given date (weights are keyed by date).
+    func setWeight(date: String, value: Double) async {
         do {
-            let w = try await APIClient.logWeight(value: value, date: df.string(from: Date()))
+            let w = try await APIClient.logWeight(value: value, date: date)
             if let i = weights.firstIndex(where: { $0.date == w.date }) { weights[i] = w }
             else { weights.append(w); weights.sort { $0.date < $1.date } }
             WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    func deleteWeight(_ w: Weight) async {
+        let backup = weights
+        weights.removeAll { $0.date == w.date }
+        do { try await APIClient.deleteWeight(date: w.date) }
+        catch { weights = backup; errorMessage = error.localizedDescription }
     }
 }
