@@ -4,6 +4,7 @@ struct EditEntrySheet: View {
     let entry: Entry
     let onSave: (Entry) -> Void
     let onSaveRoutine: (_ name: String, _ descr: String) -> Void
+    let onRelog: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var text: String
@@ -17,10 +18,12 @@ struct EditEntrySheet: View {
 
     init(entry: Entry,
          onSave: @escaping (Entry) -> Void,
-         onSaveRoutine: @escaping (String, String) -> Void) {
+         onSaveRoutine: @escaping (String, String) -> Void,
+         onRelog: @escaping () -> Void) {
         self.entry = entry
         self.onSave = onSave
         self.onSaveRoutine = onSaveRoutine
+        self.onRelog = onRelog
         _text = State(initialValue: entry.text)
         _calories = State(initialValue: entry.calories)
         _protein = State(initialValue: entry.protein)
@@ -61,6 +64,13 @@ struct EditEntrySheet: View {
                     macroRow("Fat", $fat)
                 }
                 Section {
+                    Button {
+                        Haptics.success()
+                        onRelog()
+                        dismiss()
+                    } label: {
+                        Label("Log again today", systemImage: "arrow.counterclockwise")
+                    }
                     Button {
                         routineName = text
                         showRoutinePrompt = true

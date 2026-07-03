@@ -121,11 +121,6 @@ struct APIClient {
         return try decode(data, as: Settings.self)
     }
 
-    static func recents() async throws -> [RecentMeal] {
-        let data = try await request("/recents")
-        return try decode(data, as: [RecentMeal].self)
-    }
-
     static func summary(days: Int = 7) async throws -> [DaySummary] {
         let data = try await request("/summary?days=\(days)")
         return try decode(data, as: [DaySummary].self)
