@@ -77,11 +77,12 @@ struct APIClient {
 
     // MARK: Endpoints
 
-    static func estimate(text: String?, imageBase64: String?) async throws -> Estimate {
+    static func estimate(text: String?, imageBase64: String?, research: Bool = false) async throws -> Estimate {
         let payload = EstimateRequest(
             text: text?.isEmpty == true ? nil : text,
             imageBase64: imageBase64,
-            mediaType: imageBase64 == nil ? nil : "image/jpeg"
+            mediaType: imageBase64 == nil ? nil : "image/jpeg",
+            research: research ? true : nil
         )
         let data = try await request("/estimate", method: "POST", body: try encoder.encode(payload))
         return try decode(data, as: Estimate.self)

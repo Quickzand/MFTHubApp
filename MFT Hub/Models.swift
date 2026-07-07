@@ -45,6 +45,7 @@ struct EstimateRequest: Codable {
     var text: String?
     var imageBase64: String?
     var mediaType: String?
+    var research: Bool?   // deep estimate: server lets the AI use Google Search
 }
 
 struct Routine: Codable, Identifiable, Hashable {

@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var showLibrary = false
     @State private var showPhotoChoice = false
     @State private var estimating = false
+    @State private var deepSearch = false
     @State private var pending: Estimate?
     @State private var pendingText = ""
     @State private var editing: Entry?
@@ -251,7 +252,8 @@ struct ContentView: View {
             if estimating {
                 HStack(spacing: 8) {
                     ProgressView()
-                    Text("Analyzing your meal…").font(.subheadline).foregroundStyle(.secondary)
+                    Text(deepSearch ? "Researching your meal…" : "Analyzing your meal…")
+                        .font(.subheadline).foregroundStyle(.secondary)
                     Spacer()
                 }.padding(.horizontal, 6)
             }
@@ -287,6 +289,16 @@ struct ContentView: View {
             }
             HStack(spacing: 10) {
                 Button { showPhotoChoice = true } label: { Image(systemName: "camera.fill").font(.body) }.buttonStyle(.glass)
+                Button {
+                    Haptics.tap()
+                    deepSearch.toggle()
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.body)
+                        .fontWeight(deepSearch ? .bold : .regular)
+                }
+                .buttonStyle(.glass)
+                .tint(deepSearch ? Theme.accent : .primary)
                 TextField(image == nil ? "What did you eat?" : "Add a note (optional)", text: $text)
                     .focused($inputFocused).submitLabel(.done).onSubmit { inputFocused = false }
                     .padding(.horizontal, 16).padding(.vertical, 11).glassEffect(in: Capsule())
@@ -304,7 +316,8 @@ struct ContentView: View {
         let b64 = image?.compressedBase64()
         Task {
             do {
-                let est = try await APIClient.estimate(text: text.isEmpty ? nil : text, imageBase64: b64)
+                let est = try await APIClient.estimate(text: text.isEmpty ? nil : text, imageBase64: b64,
+                                                       research: deepSearch)
                 pending = est
             } catch { state.errorMessage = error.localizedDescription }
             estimating = false
@@ -325,7 +338,7 @@ struct ContentView: View {
         withAnimation { recentlyDeleted = nil }
         Task { await state.save(EntryCreate(text: d.text, calories: d.calories, protein: d.protein, carbs: d.carbs, fat: d.fat)) }
     }
-    private func reset() { text = ""; image = nil; pending = nil; pendingText = "" }
+    private func reset() { text = ""; image = nil; pending = nil; pendingText = ""; deepSearch = false }
 }
 
 extension Estimate: Identifiable {

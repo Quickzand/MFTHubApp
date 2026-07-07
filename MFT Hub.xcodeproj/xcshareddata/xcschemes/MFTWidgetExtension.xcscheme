@@ -18,6 +18,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3480EBE82FF24D53002BA480"
                BuildableName = "MFTWidgetExtension.appex"
+               BlueprintName = "MFTWidgetExtension"
                ReferencedContainer = "container:MFT Hub.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -63,6 +64,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3480EBE82FF24D53002BA480"
             BuildableName = "MFTWidgetExtension.appex"
+            BlueprintName = "MFTWidgetExtension"
             ReferencedContainer = "container:MFT Hub.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
